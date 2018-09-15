@@ -1,7 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <!--1.DispatcherServlet: 前端控制器,用来过滤客户端发送过来,想要进行逻辑处理的请求-->
+    <!--DispatcherServlet: 前端控制器,用来过滤客户端发送过来,想要进行逻辑处理的请求-->
+
+    <!--5.配置处理器映射器,可以省略就,有默认配置-->
+    <!--匹配规则:将url和controller的beanName做匹配-->
+    <!--day2-->
+    <!--配置拦截的第一种方式-->
+    <!--<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">-->
+        <!--<property name="interceptors">-->
+            <!--<list>-->
+                <!--<ref bean="inter1"/>-->
+                <!--<ref bean="inter2"/>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
+    <!--配置拦截器的第二种方式-->
+    <!--<mvc:interceptors>-->
+        <!--&lt;!&ndash;下面配置的拦截条件都拦截[不考虑exclude-mapping]&ndash;&gt;-->
+        <!--<bean class="web.interceptor.MyInterceptor3"/>-->
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/**"/>-->
+            <!--<mvc:exclude-mapping path="/abst/*"/>-->
+            <!--<ref bean="inter1"/>-->
+        <!--</mvc:interceptor>-->
+    <!--</mvc:interceptors>-->
+    <!--<mvc:interceptors>-->
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/*"/>-->
+            <!--<ref bean="inter2"/>-->
+        <!--</mvc:interceptor>-->
+    <!--</mvc:interceptors>-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <ref bean="timeinter"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <ref bean="logininter"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+
+
+
+
+
+    <!--7.视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+
+    <!--day1-->
+    <!--配置TestHelloController:beanNameUrl的映射规则,beanName叫什么就是被分发什么请求-->
+    <bean name="/test1hello.action" class="web.controller.Test1_HelloController"/>
+    <bean name="/test1hello" class="web.controller.Test1_HelloController"/>
+
+    <!--处理静态资源的第二种方式-->
+    <!--<mvc:resources mapping="/images/**" location="/images/"/>-->
+    <!--<mvc:resources mapping="/css/**" location="/css/"/>-->
+
+    <!--处理静态资源的第三种方式  最简单的-->
+    <mvc:default-servlet-handler/>
+
+    <!--day2-->
+    <bean name="/test3" class="web.controller.Test3_ResponseNull"/>
+    <bean name="/abst/test4" class="web.controller.Test4_AbstractController">
+        <!--串行session-->
+        <property name="synchronizeOnSession" value="true"></property>
+        <!--支持的请求方式-->
+        <property name="supportedMethods" value="GET"></property>
+        <!--进入控制器之前必须有session-->
+        <!--<property name="requireSession" value="true"/>-->
+    </bean>
+
+    <!--自动义适配器-->
+    <bean class="web.adapter.MyHandlerAdapter"/>
+    <!--spring提供的适配器-->
+    <!--6.配置处理器适配器,可以省略,有默认配置-->
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+
+
+    <bean name="/test5" class="web.controller.Test5_MyAdapterController"/>
+
+
+
+
+
+    <!--配置springMVC的拦截器-->
+    <bean name="inter1" class="web.interceptor.MyInterceptor1" ></bean>
+    <bean name="inter2" class="web.interceptor.MyInterceptor2" ></bean>
+    <bean name="timeinter" class="web.interceptor.TimeInterceptor4"/>
+    <bean name="logininter" class="web.interceptor.LoginInterceptor5"/>
+
+
+    <bean name="/login" class="web.controller.Test6_LoginController"/>
 </beans>

@@ -7,16 +7,61 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/applicationContext.xml</param-value>
     </context-param>
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
+    <!--<listener>-->
+        <!--<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>-->
+    <!--</listener>-->
+
+    <filter>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--如果DispatcherServlet拦截"/",为了实现REST风格,拦截了所有的请求,那么同时对*.js,*.jpg等静态文件的访问也就被拦截了。
+       解决方式一：利用Tomcat的defaultServlet来处理静态文件
+       解决方式二:在dispatcher-servlet.xml使用<mvc:resources>标签-->
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>default</servlet-name>-->
+        <!--<url-pattern>*.css</url-pattern>-->
+        <!--<url-pattern>*.js</url-pattern>-->
+        <!--<url-pattern>*.png</url-pattern>-->
+        <!--<url-pattern>*.jpg</url-pattern>-->
+    <!--</servlet-mapping>-->
+
+
+    <!--1,配置前端控制器:dispatcherServlet-->
     <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!--提前加载-->
+        <!--可以在这里指定Spring MVC的配置文件路径及文件名-->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:spring-annotation-mvc.xml</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
-        <url-pattern>*.form</url-pattern>
+        <!--url拦截1-->
+        <!--<url-pattern>*.action</url-pattern>-->
+
+        <!--<url-pattern>/*</url-pattern>'/*'错误配置,可以拦截所有请求,但是会把处理器返回的视图也当做请求url去映射-->
+
+        <!--'/'才是配置拦截所有请求,但会拦截css img等静态资源-->
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
+
 </web-app>
